@@ -8,16 +8,16 @@ let ADMINS = [];
 let USERS = [];
 let COURSES = [];
 
-const secretKey = "superS3cr3t1"; // replace this with your own secret key
+const secretKey = "myTestingSecretKey"; // replace this with your own secret key
 
 const generateJwt = (user) => {
   const payload = { username: user.username, };
+  // console.log(payload)
   return jwt.sign(payload, secretKey, { expiresIn: '1h' });
 };
 
 const authenticateJwt = (req, res, next) => {
   const authHeader = req.headers.authorization;
-
   if (authHeader) {
     const token = authHeader.split(' ')[1];
 
@@ -25,8 +25,7 @@ const authenticateJwt = (req, res, next) => {
       if (err) {
         return res.sendStatus(403);
       }
-
-      req.user = user;
+      req.body.user = user;
       next();
     });
   } else {

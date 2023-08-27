@@ -27,10 +27,12 @@ const courseSchema = new mongoose.Schema({
   published: Boolean
 });
 
-// Define mongoose models
+// // Define mongoose models
 const User = mongoose.model('User', userSchema);
+
 const Admin = mongoose.model('Admin', adminSchema);
 const Course = mongoose.model('Course', courseSchema);
+
 
 const authenticateJwt = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -50,8 +52,8 @@ const authenticateJwt = (req, res, next) => {
 
 // Connect to MongoDB
 // DONT MISUSE THIS THANKYOU!!
-mongoose.connect('mongodb+srv://kirattechnologies:iRbi4XRDdM7JMMkl@cluster0.e95bnsi.mongodb.net/courses', { useNewUrlParser: true, useUnifiedTopology: true, dbName: "courses" });
-
+// mongoose.connect('mongodb+srv://kirattechnologies:iRbi4XRDdM7JMMkl@cluster0.e95bnsi.mongodb.net/courses', { useNewUrlParser: true, useUnifiedTopology: true, dbName: "courses" });
+mongoose.connect('mongodb+srv://anasmongo:51RmR6lXbRE5fvV3@firstmongodbsetup.hikybmj.mongodb.net/courses', { useNewUrlParser: true, useUnifiedTopology: true});
 app.post('/admin/signup', (req, res) => {
   const { username, password } = req.body;
   function callback(admin) {
@@ -87,6 +89,7 @@ app.post('/admin/courses', authenticateJwt, async (req, res) => {
 });
 
 app.put('/admin/courses/:courseId', authenticateJwt, async (req, res) => {
+  var id = req.params.courseId;
   const course = await Course.findByIdAndUpdate(req.params.courseId, req.body, { new: true });
   if (course) {
     res.json({ message: 'Course updated successfully' });
@@ -132,7 +135,6 @@ app.get('/users/courses', authenticateJwt, async (req, res) => {
 
 app.post('/users/courses/:courseId', authenticateJwt, async (req, res) => {
   const course = await Course.findById(req.params.courseId);
-  console.log(course);
   if (course) {
     const user = await User.findOne({ username: req.user.username });
     if (user) {
