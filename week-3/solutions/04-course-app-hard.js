@@ -1,8 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 
 const SECRET = 'SECr3t';  // This should be in an environment variable in a real application
@@ -40,7 +41,8 @@ const authenticateJwt = (req, res, next) => {
     const token = authHeader.split(' ')[1];
     jwt.verify(token, SECRET, (err, user) => {
       if (err) {
-        return res.sendStatus(403);
+        // return res.sendStatus(403);
+        return res.json({message:'error'});
       }
       req.user = user;
       next();
@@ -54,12 +56,21 @@ const authenticateJwt = (req, res, next) => {
 // DONT MISUSE THIS THANKYOU!!
 // mongoose.connect('mongodb+srv://kirattechnologies:iRbi4XRDdM7JMMkl@cluster0.e95bnsi.mongodb.net/courses', { useNewUrlParser: true, useUnifiedTopology: true, dbName: "courses" });
 mongoose.connect('mongodb+srv://anasmongo:51RmR6lXbRE5fvV3@firstmongodbsetup.hikybmj.mongodb.net/courses', { useNewUrlParser: true, useUnifiedTopology: true});
+app.get('/admin/checkLogin',authenticateJwt,(req,res)=>{
+  const username = req.user.username
+  res.json({message:'success',username})
+})
+
 app.post('/admin/signup', (req, res) => {
   const { username, password } = req.body;
-  function callback(admin) {
-    if (admin) {
+  function callback(admin) 
+  {
+    if (admin) 
+    {
       res.status(403).json({ message: 'Admin already exists' });
-    } else {
+    } 
+    else 
+    {
       const obj = { username: username, password: password };
       const newAdmin = new Admin(obj);
       newAdmin.save();
@@ -90,6 +101,7 @@ app.post('/admin/courses', authenticateJwt, async (req, res) => {
 
 app.put('/admin/courses/:courseId', authenticateJwt, async (req, res) => {
   var id = req.params.courseId;
+  console.log(id)
   const course = await Course.findByIdAndUpdate(req.params.courseId, req.body, { new: true });
   if (course) {
     res.json({ message: 'Course updated successfully' });

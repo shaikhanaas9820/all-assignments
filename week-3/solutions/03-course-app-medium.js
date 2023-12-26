@@ -1,8 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const cors = require('cors');
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 
 let ADMINS = [];
@@ -19,7 +20,7 @@ try {
     USERS = [];
     COURSES = [];
 }
-console.log(ADMINS);
+// console.log(ADMINS);
 
 const SECRET = 'my-secret-key';
 
@@ -43,7 +44,7 @@ const authenticateJwt = (req, res, next) => {
 app.post('/admin/signup', (req, res) => {
   const { username, password } = req.body;
   const admin = ADMINS.find(a => a.username === username);
-  console.log("admin signup");
+  // console.log("admin signup");
   if (admin) {
     res.status(403).json({ message: 'Admin already exists' });
   } else {

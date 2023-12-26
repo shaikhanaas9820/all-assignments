@@ -20,6 +20,8 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
+const cors = require('cors');
+app.use(cors());
 
 app.get('/files', (req, res) => {
   fs.readdir(path.join(__dirname, './files/'), (err, files) => {
@@ -45,4 +47,6 @@ app.all('*', (req, res) => {
   res.status(404).send('Route not found');
 });
 
-module.exports = app;
+app.listen(3000,() =>{
+  console.log("App is listening on port 3000")
+})
